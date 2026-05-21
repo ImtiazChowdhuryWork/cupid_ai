@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter pub *)",
+      "Bash(flutter analyze *)",
+      "Bash(flutter devices *)",
+      "Bash(flutter build *)",
+      "Bash(Get-Content \"C:\\\\Users\\\\IMTIAZ~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\I--website-cupid-ai\\\\7a728687-2b12-4f5f-b165-fc3ea9b9a3d5\\\\tasks\\\\b8wmv7e94.output\" -Wait -Tail 30)",
+      "Bash(Select-Object -First 50)",
+      "PowerShell(Test-Path *)",
+      "Bash(flutter run *)",
+      "Bash(taskkill /F /IM java.exe)",
+      "Bash(taskkill /F /IM dart.exe)",
+      "PowerShell(Stop-Process *)",
+      "Bash(flutter clean *)",
+      "Bash(curl -L \"https://fonts.gstatic.com/s/poppins/v23/pxiEyp8kv8JHgFVrJJfecg.woff2\" -o /tmp/test_poppins.woff2)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(curl -s \"https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap\" -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\)\")",
+      "Bash(curl -L \"https://fonts.gstatic.com/s/poppins/v24/pxiEyp8kv8JHgFVrFJA.ttf\" -o Poppins-Regular.ttf)",
+      "Bash(curl -L \"https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLGT9V1s.ttf\" -o Poppins-Medium.ttf)",
+      "Bash(curl -L \"https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLEj6V1s.ttf\" -o Poppins-SemiBold.ttf)",
+      "Bash(curl -L \"https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLCz7V1s.ttf\" -o Poppins-Bold.ttf)",
+      "PowerShell(New-Item *)",
+      "PowerShell(Move-Item *)",
+      "PowerShell(Get-ChildItem -Force \"I:\\\\website\\\\cupid_ai\\\\mobile\" | ForEach-Object { $_.Name })",
+      "PowerShell(Get-ChildItem -Force \"I:\\\\website\\\\cupid_ai\" | ForEach-Object { $_.Name })",
+      "PowerShell(Get-ChildItem \"I:\\\\website\\\\cupid_ai\\\\scripts\" | ForEach-Object { $_.Name })",
+      "Bash(go version *)",
+      "Bash(go mod *)",
+      "Bash(go get *)",
+      "Bash(go build *)",
+      "Bash(psql *)",
+      "PowerShell(winget *)",
+      "Bash(curl -s -X POST http://localhost:8080/api/v1/auth/register -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"password\":\"password123\",\"display_name\":\"Test User\"}')",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s -X POST http://localhost:8080/api/v1/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"test@example.com\",\"password\":\"password123\"}')",
+      "Bash(curl -s -X GET http://localhost:8080/api/v1/profile -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzkzODk2MjQsImlhdCI6MTc3OTM4ODcyNCwidXNlcl9pZCI6IjBkYjFlZjA5LTU1NzktNDg3MS1hNzBmLTRkZGVhZGI0Y2Y2NSJ9._38tOoqrbI0_VuyiDt1OtsR5lQcKLGSVdVwrJkgHYUU')",
+      "Bash(ipconfig)",
+      "Bash(adb devices *)",
+      "Bash(curl *)"
+    ]
+  }
+}
