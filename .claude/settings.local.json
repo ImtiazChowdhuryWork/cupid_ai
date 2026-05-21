@@ -37,7 +37,11 @@
       "Bash(curl -s -X GET http://localhost:8080/api/v1/profile -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzkzODk2MjQsImlhdCI6MTc3OTM4ODcyNCwidXNlcl9pZCI6IjBkYjFlZjA5LTU1NzktNDg3MS1hNzBmLTRkZGVhZGI0Y2Y2NSJ9._38tOoqrbI0_VuyiDt1OtsR5lQcKLGSVdVwrJkgHYUU')",
       "Bash(ipconfig)",
       "Bash(adb devices *)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(npm --version)",
+      "Bash(npx create-next-app@latest dashboard --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npm install *)",
+      "Bash(npm run *)"
     ]
   }
 }
