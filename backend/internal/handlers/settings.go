@@ -48,6 +48,7 @@ func (h *SettingsHandler) GetSettings(c *gin.Context) {
 		"smtp_from":             settings.SMTPFrom,
 		"smtp_configured":       smtpConfigured,
 		"support_email":         settings.SupportEmail,
+		"support_whatsapp":      settings.SupportWhatsApp,
 		// never expose password
 	})
 }
@@ -62,7 +63,7 @@ func (h *SettingsHandler) UpdateSettings(c *gin.Context) {
 	for key, val := range body {
 		switch key {
 		case "anthropic_api_key", "app_version", "privacy_policy_url", "terms_url", "cookie_policy_url",
-			"smtp_host", "smtp_port", "smtp_user", "smtp_password", "smtp_from", "support_email":
+			"smtp_host", "smtp_port", "smtp_user", "smtp_password", "smtp_from", "support_email", "support_whatsapp":
 			if s, ok := val.(string); ok {
 				if err := h.repo.Set(key, s); err != nil {
 					c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

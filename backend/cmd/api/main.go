@@ -86,6 +86,8 @@ func main() {
 			"terms_url":          settings.TermsURL,
 			"cookie_policy_url":  settings.CookiePolicyURL,
 			"app_version":        settings.AppVersion,
+			"support_email":      settings.SupportEmail,
+			"support_whatsapp":   settings.SupportWhatsApp,
 		})
 	})
 
