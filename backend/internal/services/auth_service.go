@@ -59,6 +59,23 @@ func (s *AuthService) Login(req *models.LoginRequest) (*models.AuthResponse, err
 	return s.buildAuthResponse(user)
 }
 
+// RefreshAccessToken validates a refresh token and issues a new access token.
+func (s *AuthService) RefreshAccessToken(refreshToken string, tokenRepo *repository.RefreshTokenRepository) (string, error) {
+	// Validate the refresh token exists and is not expired
+	userID, err := tokenRepo.ValidateAndGetUserID(refreshToken)
+	if err != nil {
+		return "", errors.New("invalid or expired refresh token")
+	}
+
+	// Generate a new access token
+	return s.generateAccessToken(userID)
+}
+
+// IssueTokens builds an AuthResponse for an already-authenticated user (e.g. Google Sign-In).
+func (s *AuthService) IssueTokens(user *models.User) (*models.AuthResponse, error) {
+	return s.buildAuthResponse(user)
+}
+
 func (s *AuthService) buildAuthResponse(user *models.User) (*models.AuthResponse, error) {
 	accessToken, err := s.generateAccessToken(user.ID)
 	if err != nil {
@@ -77,7 +94,7 @@ func (s *AuthService) buildAuthResponse(user *models.User) (*models.AuthResponse
 func (s *AuthService) generateAccessToken(userID string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID,
-		"exp":     time.Now().Add(15 * time.Minute).Unix(),
+		"exp":     time.Now().Add(60 * time.Minute).Unix(), // 1 hour for mobile UX
 		"iat":     time.Now().Unix(),
 	}
 

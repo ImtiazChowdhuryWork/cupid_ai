@@ -66,3 +66,52 @@ func (r *UserRepository) UpdateDisplayName(id, displayName string) error {
 	)
 	return err
 }
+
+// GetPasswordHash returns the stored bcrypt hash for a user.
+// For Google-signed-in accounts this returns "google:<uid>" — handle accordingly.
+func (r *UserRepository) GetPasswordHash(id string) (string, error) {
+	var hash string
+	err := r.db.QueryRow(`SELECT password_hash FROM users WHERE id = $1`, id).Scan(&hash)
+	if errors.Is(err, sql.ErrNoRows) {
+		return "", nil
+	}
+	return hash, err
+}
+
+// UpdatePassword overwrites the stored password hash for a user.
+func (r *UserRepository) UpdatePassword(id, newHash string) error {
+	_, err := r.db.Exec(
+		`UPDATE users SET password_hash = $1 WHERE id = $2`,
+		newHash, id,
+	)
+	return err
+}
+
+// UpdateEmail changes the user's email after caller has verified password
+// and ensured the new email is not already taken.
+func (r *UserRepository) UpdateEmail(id, newEmail string) error {
+	_, err := r.db.Exec(
+		`UPDATE users SET email = $1 WHERE id = $2`,
+		newEmail, id,
+	)
+	return err
+}
+
+func (r *UserRepository) UpdateFCMToken(id, token string) error {
+	_, err := r.db.Exec(
+		`UPDATE users SET fcm_token = $1 WHERE id = $2`,
+		token, id,
+	)
+	return err
+}
+
+func (r *UserRepository) Delete(id string) error {
+	_, err := r.db.Exec(`DELETE FROM users WHERE id = $1`, id)
+	return err
+}
+
+func (r *UserRepository) GetFCMToken(id string) (string, error) {
+	var token string
+	err := r.db.QueryRow(`SELECT fcm_token FROM users WHERE id = $1`, id).Scan(&token)
+	return token, err
+}

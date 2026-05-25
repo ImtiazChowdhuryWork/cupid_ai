@@ -8,6 +8,22 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// ExtractUserID validates a raw JWT string and returns the user_id claim.
+func ExtractUserID(tokenStr, jwtSecret string) (string, error) {
+	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
+		return []byte(jwtSecret), nil
+	})
+	if err != nil || !token.Valid {
+		return "", err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", jwt.ErrTokenInvalidClaims
+	}
+	userID, _ := claims["user_id"].(string)
+	return userID, nil
+}
+
 func AuthRequired(jwtSecret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")

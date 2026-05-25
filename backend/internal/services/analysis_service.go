@@ -12,13 +12,19 @@ import (
 )
 
 type AnalysisService struct {
-	analysisRepo *repository.AnalysisRepository
-	aiServiceURL string
+	analysisRepo  *repository.AnalysisRepository
+	settingsRepo  *repository.SettingsRepository
+	aiServiceURL  string
 }
 
-func NewAnalysisService(analysisRepo *repository.AnalysisRepository, aiServiceURL string) *AnalysisService {
+func NewAnalysisService(
+	analysisRepo *repository.AnalysisRepository,
+	settingsRepo *repository.SettingsRepository,
+	aiServiceURL string,
+) *AnalysisService {
 	return &AnalysisService{
 		analysisRepo: analysisRepo,
+		settingsRepo: settingsRepo,
 		aiServiceURL: aiServiceURL,
 	}
 }
@@ -44,8 +50,17 @@ func (s *AnalysisService) Analyze(userID, conversationText string, tier string) 
 		}
 	}
 
-	// Call AI microservice
-	aiResp, err := s.callAIService(conversationText)
+	// Read Claude API key from database (set via admin dashboard)
+	apiKey, err := s.settingsRepo.GetAPIKey()
+	if err != nil {
+		return nil, fmt.Errorf("could not read API key from settings: %w", err)
+	}
+	if apiKey == "" {
+		return nil, errors.New("Claude API key not configured — set it in the admin dashboard under Settings")
+	}
+
+	// Call AI microservice, passing the key in the header
+	aiResp, err := s.callAIService(conversationText, apiKey)
 	if err != nil {
 		return nil, fmt.Errorf("AI service error: %w", err)
 	}
@@ -66,14 +81,18 @@ func (s *AnalysisService) GetHistory(userID string, page, limit int) ([]models.A
 	return s.analysisRepo.GetHistory(userID, page, limit)
 }
 
-func (s *AnalysisService) callAIService(conversationText string) (*aiServiceResponse, error) {
+func (s *AnalysisService) callAIService(conversationText, apiKey string) (*aiServiceResponse, error) {
 	body, _ := json.Marshal(aiServiceRequest{Conversation: conversationText})
 
-	resp, err := http.Post(
-		s.aiServiceURL+"/analyze",
-		"application/json",
-		bytes.NewBuffer(body),
-	)
+	req, err := http.NewRequest(http.MethodPost, s.aiServiceURL+"/analyze", bytes.NewBuffer(body))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	// Pass the API key to the AI service via header — keeps .env as fallback
+	req.Header.Set("X-Anthropic-Key", apiKey)
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("could not reach AI service: %w", err)
 	}
