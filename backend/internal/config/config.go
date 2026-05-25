@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -17,6 +18,15 @@ type Config struct {
 	JWTSecret      string
 	AIServiceURL   string
 	AnthropicKey   string
+	AdminToken     string
+	SMTPHost       string
+	SMTPPort       int
+	SMTPUser       string
+	SMTPPassword   string
+	SMTPFrom       string
+	// LogCodes prints emailed verification codes to the server log and lets
+	// code-sending actions succeed even if email delivery fails. DEV ONLY.
+	LogCodes       bool
 }
 
 func Load() *Config {
@@ -34,6 +44,13 @@ func Load() *Config {
 		JWTSecret:    getEnv("JWT_SECRET", "change-this-secret"),
 		AIServiceURL: getEnv("AI_SERVICE_URL", "http://127.0.0.1:8001"),
 		AnthropicKey: getEnv("ANTHROPIC_API_KEY", ""),
+		AdminToken:   getEnv("ADMIN_TOKEN", ""),
+		SMTPHost:     getEnv("SMTP_HOST", "smtp.gmail.com"),
+		SMTPPort:     func() int { p, _ := strconv.Atoi(getEnv("SMTP_PORT", "587")); return p }(),
+		SMTPUser:     getEnv("SMTP_USER", ""),
+		SMTPPassword: getEnv("SMTP_PASSWORD", ""),
+		SMTPFrom:     getEnv("SMTP_FROM", "noreply@cupidai.app"),
+		LogCodes:     getEnv("LOG_CODES", "false") == "true",
 	}
 }
 
