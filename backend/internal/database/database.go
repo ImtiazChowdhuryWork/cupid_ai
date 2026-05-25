@@ -122,12 +122,19 @@ func RunMigrations(db *sql.DB) {
 			updated_at TIMESTAMP    NOT NULL DEFAULT NOW()
 		)`,
 
+		// De-duplicate any rows from older builds that re-seeded on every restart
+		// (the old seed used ON CONFLICT DO NOTHING with no unique target, so the
+		// auto-UUID primary key never collided and seed rows piled up). Keep the
+		// earliest row per title, then enforce uniqueness so the seed is idempotent.
+		`DELETE FROM help_topics a USING help_topics b WHERE a.title = b.title AND a.ctid > b.ctid`,
+		`CREATE UNIQUE INDEX IF NOT EXISTS idx_help_topics_title ON help_topics(title)`,
+
 		`INSERT INTO help_topics (emoji, title, subtitle, content, sort_order) VALUES
 			('💬', 'How to use',      'Paste a conversation, get 5 replies',     '1. Paste the conversation\nLabel each message as "Them:" or "You:" so the AI knows who said what.\n\n2. AI analyzes the vibe\nCupid reads the tone, context, and what they really mean.\n\n3. Pick your reply\nGet 5 responses across different styles. Witty, sincere, confident — you choose.\n\n4. Copy and send\nTap Copy on the response you like, paste it into your app, and send.', 1),
 			('💳', 'Billing & Plans',  'Subscriptions, upgrades, refunds',        'Free Plan\n3 analyses per day, all 5 response styles included.\n\nMonthly — $14.99/mo\nUnlimited analyses, priority queue, full history.\n\nCancellation\nYou can pause or cancel at any time from Profile > Subscription. No hidden fees.\n\nRefunds\nContact support@cupidai.app within 7 days of purchase for a refund request.', 2),
 			('🔧', 'Technical issues', 'App bugs and errors',                     'App not responding\nForce close the app and reopen it. If it persists, reinstall.\n\nAPI key not configured\nThe admin needs to set the Claude API key in the dashboard Settings page.\n\nResponses feel generic\nInclude more conversation context and clearly label Them: and You: messages.\n\nSession expired errors\nSign out from Profile and log back in to reset your session token.\n\nScreenshot import fails\nEnsure the screenshot has clear text. Blurry or small text may not be recognized.', 3),
 			('🔒', 'Privacy & Data',   'Your data and account security',          'What we store\nYour analyses, responses, and streak data.\n\nWhat we never do\nSell your data, share with advertisers, or read your conversations for any purpose other than generating responses.\n\nDelete your data\nGo to Profile > Account Settings > Delete Account. All data is removed within 30 days.\n\nGDPR / Data export\nRequest a full export of your data from Profile > Privacy & Data.', 4)
-		ON CONFLICT DO NOTHING`,
+		ON CONFLICT (title) DO NOTHING`,
 
 		`CREATE TABLE IF NOT EXISTS faqs (
 			id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -140,6 +147,10 @@ func RunMigrations(db *sql.DB) {
 			updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 		)`,
 
+		// Same de-dup + uniqueness fix for FAQs (see help_topics note above).
+		`DELETE FROM faqs a USING faqs b WHERE a.question = b.question AND a.ctid > b.ctid`,
+		`CREATE UNIQUE INDEX IF NOT EXISTS idx_faqs_question ON faqs(question)`,
+
 		`INSERT INTO faqs (question, answer, category, sort_order) VALUES
 			('How does the conversation analysis work?', 'Paste a conversation using "Them:" and "You:" labels. The AI reads the full context and generates 5 tailored responses across different styles.', 'usage', 1),
 			('What is the difference between the 5 response styles?', 'Witty = clever & playful. Sincere = warm & genuine. Confident = bold & direct. Thoughtful = deep & caring. Casual = relaxed & easy-going.', 'usage', 2),
@@ -147,7 +158,7 @@ func RunMigrations(db *sql.DB) {
 			('Why am I limited to 3 analyses per day?', 'Free accounts get 3 analyses per day. Upgrade to Monthly for unlimited analyses with no daily cap.', 'billing', 4),
 			('The AI responses do not feel right for my conversation.', 'Include more context, label messages clearly as Them: or You:, and try the Screenshot import to avoid copy-paste errors.', 'usage', 5),
 			('How do I cancel or pause my subscription?', 'Go to Profile > Subscription. You can manage, pause, or cancel your plan at any time.', 'billing', 6)
-		ON CONFLICT DO NOTHING`,
+		ON CONFLICT (question) DO NOTHING`,
 
 		`CREATE TABLE IF NOT EXISTS user_notifications (
 			id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -210,7 +221,8 @@ func RunMigrations(db *sql.DB) {
 			('privacy_policy_url',   'https://cupidai.app/privacy'),
 			('terms_url',            'https://cupidai.app/terms'),
 			('cookie_policy_url',    'https://cupidai.app/cookies'),
-			('support_email',        'support@cupidai.app')
+			('support_email',        'support@cupidai.app'),
+			('support_whatsapp',     '')
 		ON CONFLICT (key) DO NOTHING`,
 	}
 

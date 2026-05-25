@@ -14,6 +14,7 @@ type AppSettings struct {
 	SMTPPassword       string `json:"-"` // never serialised
 	SMTPFrom           string `json:"smtp_from"`
 	SupportEmail       string `json:"support_email"`
+	SupportWhatsApp    string `json:"support_whatsapp"`
 }
 
 type UpdateSettingsRequest struct {

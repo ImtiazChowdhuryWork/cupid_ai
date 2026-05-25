@@ -55,6 +55,8 @@ func (r *SettingsRepository) Get() (*models.AppSettings, error) {
 	supportEmail := kv["support_email"]
 	if supportEmail == "" { supportEmail = "support@cupidai.app" }
 
+	supportWhatsApp := kv["support_whatsapp"] // empty = WhatsApp option hidden in app
+
 	return &models.AppSettings{
 		AnthropicAPIKey:    kv["anthropic_api_key"],
 		FreeTierDailyLimit: limit,
@@ -69,6 +71,7 @@ func (r *SettingsRepository) Get() (*models.AppSettings, error) {
 		SMTPPassword:       kv["smtp_password"],
 		SMTPFrom:           smtpFrom,
 		SupportEmail:       supportEmail,
+		SupportWhatsApp:    supportWhatsApp,
 	}, nil
 }
 
